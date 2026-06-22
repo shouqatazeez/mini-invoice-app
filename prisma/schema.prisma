@@ -1,13 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -15,4 +8,101 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ============================================
+// USER - Who can login to the app (admin/owner)
+// ============================================
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// CUSTOMER - People/businesses we send bills to
+// Example: "Rahul Kumar", "ABC Company"
+// ============================================
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One customer can have many invoices
+  invoices Invoice[]
+}
+
+// ============================================
+// PRODUCT - Services/items we charge for
+// Example: "Math Tuition - ₹500", "Laptop Repair - ₹2000"
+// ============================================
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // A product can appear in many invoice line items
+  invoiceItems InvoiceItem[]
+}
+
+// ============================================
+// INVOICE - A bill sent to a customer
+// Example: "Invoice #101 for Rahul, Total: ₹1500, Status: UNPAID"
+// ============================================
+model Invoice {
+  id          Int           @id @default(autoincrement())
+  invoiceNumber String      @unique @default(cuid())
+  status      InvoiceStatus @default(UNPAID)
+  subtotal    Float         @default(0)
+  taxRate     Float         @default(0)
+  taxAmount   Float         @default(0)
+  discount    Float         @default(0)
+  total       Float         @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Which customer this invoice belongs to
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+
+  // Line items in this invoice
+  items InvoiceItem[]
+}
+
+// ============================================
+// INVOICE ITEM - Individual line items inside an invoice
+// Example: "Math Tuition x 2 = ₹1000"
+// ============================================
+model InvoiceItem {
+  id       Int   @id @default(autoincrement())
+  quantity Int
+  price    Float
+  total    Float
+
+  // Which invoice this item belongs to
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId Int
+
+  // Which product this line item is for
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+// ============================================
+// ENUM - Invoice payment status options
+// ============================================
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
 }
