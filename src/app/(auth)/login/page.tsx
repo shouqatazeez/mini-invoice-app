@@ -49,29 +49,29 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen bg-zinc-950">
+    <main className="flex min-h-screen bg-background">
       <div className="flex w-full items-center justify-center px-6 py-12 lg:w-[45%] lg:px-14 xl:px-24">
         <div className="w-full max-w-[380px]">
           <div className="mb-10 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
               <ReceiptText className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-[15px] font-semibold tracking-wide text-zinc-300">
+            <span className="text-[15px] font-semibold tracking-wide text-foreground">
               InvoTrack
             </span>
           </div>
 
           <div className="mb-10 space-y-2.5">
-            <h1 className="text-[2rem] font-bold leading-tight tracking-tight text-zinc-100">
+            <h1 className="text-[2rem] font-bold leading-tight tracking-tight text-foreground">
               Welcome back
             </h1>
-            <p className="text-[15px] leading-relaxed text-zinc-400">
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
               Sign in to your billing workspace.
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="mb-5 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -80,7 +80,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <label
                 htmlFor="email"
-                className="text-sm font-medium text-zinc-300"
+                className="text-sm font-medium text-foreground"
               >
                 Email
               </label>
@@ -94,14 +94,14 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={loading}
-                className="h-12 w-full mt-1 rounded-lg border border-zinc-800 bg-zinc-900 px-4 text-[15px] text-zinc-100 placeholder:text-zinc-500 outline-none transition-colors focus:border-primary focus:bg-zinc-900/80 disabled:opacity-50"
+                className="h-12 w-full mt-1 rounded-lg border border-border bg-muted/50 px-4 text-[15px] text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary focus:bg-background disabled:opacity-50"
               />
             </div>
 
             <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="text-sm font-medium text-zinc-300"
+                className="text-sm font-medium text-foreground"
               >
                 Password
               </label>
@@ -116,12 +116,12 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className="h-12 w-full rounded-lg border border-zinc-800 bg-zinc-900 pr-12 pl-4 text-[15px] text-zinc-100 placeholder:text-zinc-500 outline-none transition-colors focus:border-primary focus:bg-zinc-900/80 disabled:opacity-50"
+                  className="h-12 w-full rounded-lg border border-border bg-muted/50 pr-12 pl-4 text-[15px] text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary focus:bg-background disabled:opacity-50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-500 transition-colors hover:text-zinc-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
                   aria-label={
                     showPassword ? "Hide password" : "Show password"
                   }
@@ -150,11 +150,11 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-7 text-center text-sm text-zinc-500">
+          <p className="mt-7 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-semibold text-zinc-300 underline-offset-4 transition hover:text-white hover:underline"
+              className="font-semibold text-foreground underline-offset-4 transition hover:text-primary hover:underline"
             >
               Create one
             </Link>
@@ -162,21 +162,27 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative hidden w-[55%] items-center justify-center border-l border-zinc-700/40 bg-zinc-900/50 lg:flex">
+      <div className="relative hidden w-[55%] items-center justify-center border-l border-border bg-muted/30 lg:flex">
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
+          className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
+              "linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+            backgroundPosition: "0 0, 0 0",
+            maskImage:
+              "repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px), repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px)",
+            WebkitMaskImage:
+              "repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px), repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px)",
+            maskComposite: "intersect" as React.CSSProperties["maskComposite"],
+            WebkitMaskComposite: "source-in",
           }}
         />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.04)_0%,_transparent_70%)]" />
-        <div className="relative z-10 max-w-[420px] space-y-5 text-center">
-          <p className="text-[1.4rem] font-semibold leading-relaxed tracking-tight text-zinc-200">
+        <div className="relative z-10 max-w-[420px] space-y-3 text-center">
+          <p className="text-[1.4rem] font-semibold leading-relaxed tracking-tight text-foreground">
             Stay on top of your billing effortlessly.
           </p>
-          <p className="text-[15px] leading-relaxed text-zinc-400">
+          <p className="text-[15px] leading-relaxed text-muted-foreground">
             Create invoices, track payments, and manage customers through a
             clean billing dashboard.
           </p>
