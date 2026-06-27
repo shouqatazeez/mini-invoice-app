@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserId } from "@/lib/get-user-id";
 
+/**
+ * GET /api/v1/dashboard/stats
+ * Returns aggregated statistics for the logged-in user's data only.
+ *
+ * WHAT THE STATS INCLUDE:
+ * - Total revenue (sum of all PAID invoices)
+ * - Total unpaid amount
+ * - Total overdue amount
+ * - Counts of invoices by status
+ * - Total customers and products
+ */
 export async function GET() {
   try {
+    const userId = await getUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const [
       totalCustomers,
       totalProducts,
@@ -10,11 +27,11 @@ export async function GET() {
       unpaidInvoices,
       overdueInvoices,
     ] = await Promise.all([
-      prisma.customer.count(),
-      prisma.product.count(),
-      prisma.invoice.findMany({ where: { status: "PAID" } }),
-      prisma.invoice.findMany({ where: { status: "UNPAID" } }),
-      prisma.invoice.findMany({ where: { status: "OVERDUE" } }),
+      prisma.customer.count({ where: { userId } }),
+      prisma.product.count({ where: { userId } }),
+      prisma.invoice.findMany({ where: { userId, status: "PAID" } }),
+      prisma.invoice.findMany({ where: { userId, status: "UNPAID" } }),
+      prisma.invoice.findMany({ where: { userId, status: "OVERDUE" } }),
     ]);
 
     const totalRevenue = paidInvoices.reduce(
@@ -41,7 +58,8 @@ export async function GET() {
       paidCount: paidInvoices.length,
       unpaidCount: unpaidInvoices.length,
       overdueCount: overdueInvoices.length,
-      totalInvoices: paidInvoices.length + unpaidInvoices.length + overdueInvoices.length,
+      totalInvoices:
+        paidInvoices.length + unpaidInvoices.length + overdueInvoices.length,
     });
   } catch (error) {
     return NextResponse.json(

@@ -1,14 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserId } from "@/lib/get-user-id";
 import { jsPDF } from "jspdf";
 
+/**
+ * GET /api/v1/invoices/:id/pdf
+ * Generates a PDF for an invoice — only if it belongs to the logged-in user.
+ *
+ * HOW PDF GENERATION WORKS:
+ * - jsPDF creates a PDF document in memory
+ * - We add text at specific x,y coordinates (measured in mm from top-left)
+ * - The final PDF is returned as a downloadable file
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: parseInt(params.id) },
+    const userId = await getUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const invoice = await prisma.invoice.findFirst({
+      where: { id: parseInt(params.id), userId },
       include: { customer: true, items: { include: { product: true } } },
     });
 

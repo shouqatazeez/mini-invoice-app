@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserId } from "@/lib/get-user-id";
 
+/**
+ * GET /api/v1/invoices
+ * Fetches all invoices belonging to the logged-in user.
+ * Includes customer name and line items with product details.
+ */
 export async function GET() {
   try {
+    const userId = await getUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const invoices = await prisma.invoice.findMany({
+      where: { userId },
       include: { customer: true, items: { include: { product: true } } },
       orderBy: { createdAt: "desc" },
     });
@@ -17,14 +29,42 @@ export async function GET() {
   }
 }
 
+/**
+ * POST /api/v1/invoices
+ * Creates a new invoice with line items.
+ *
+ * HOW INVOICE MATH WORKS:
+ * - subtotal = sum of (quantity × price) for each item
+ * - taxAmount = subtotal × (taxRate / 100)
+ * - total = subtotal + taxAmount - discount
+ *
+ * We also verify the customer belongs to the user (can't invoice someone else's customer).
+ */
 export async function POST(request: Request) {
   try {
+    const userId = await getUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { customerId, taxRate, discount, items } = await request.json();
 
     if (!customerId || !items || items.length === 0) {
       return NextResponse.json(
         { error: "Customer and at least one item are required" },
         { status: 400 }
+      );
+    }
+
+    // Verify the customer belongs to this user
+    const customer = await prisma.customer.findFirst({
+      where: { id: customerId, userId },
+    });
+
+    if (!customer) {
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 }
       );
     }
 
@@ -39,6 +79,7 @@ export async function POST(request: Request) {
 
     const invoice = await prisma.invoice.create({
       data: {
+        userId,
         customerId,
         subtotal,
         taxRate: taxRate || 0,
