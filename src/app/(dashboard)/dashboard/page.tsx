@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import {
   IndianRupee,
   Clock,
@@ -120,11 +121,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center gap-3 mb-2">
         <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
-        <h1 className="text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-xl font-semibold ">Dashboard</h1>
       </div>
+
+      <Separator />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
