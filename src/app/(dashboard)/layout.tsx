@@ -1,6 +1,5 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Separator } from "@/components/ui/separator";
 
 export default function DashboardLayout({
   children,
@@ -11,9 +10,8 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b px-4">
+        <header className="flex h-12 items-center px-4 lg:hidden">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="h-4" />
         </header>
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>

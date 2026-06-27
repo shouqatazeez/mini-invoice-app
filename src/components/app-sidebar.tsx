@@ -69,7 +69,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
                   <ReceiptText className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
