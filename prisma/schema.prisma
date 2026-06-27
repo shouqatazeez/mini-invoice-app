@@ -20,6 +20,11 @@ model User {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // A user owns their own customers, products, and invoices
+  customers Customer[]
+  products  Product[]
+  invoices  Invoice[]
 }
 
 // ============================================
@@ -34,6 +39,10 @@ model Customer {
   address   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Which user owns this customer
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
   // One customer can have many invoices
   invoices Invoice[]
@@ -51,6 +60,10 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Which user owns this product
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
   // A product can appear in many invoice line items
   invoiceItems InvoiceItem[]
 }
@@ -60,16 +73,20 @@ model Product {
 // Example: "Invoice #101 for Rahul, Total: ₹1500, Status: UNPAID"
 // ============================================
 model Invoice {
-  id          Int           @id @default(autoincrement())
-  invoiceNumber String      @unique @default(cuid())
-  status      InvoiceStatus @default(UNPAID)
-  subtotal    Float         @default(0)
-  taxRate     Float         @default(0)
-  taxAmount   Float         @default(0)
-  discount    Float         @default(0)
-  total       Float         @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id            Int           @id @default(autoincrement())
+  invoiceNumber String        @unique @default(cuid())
+  status        InvoiceStatus @default(UNPAID)
+  subtotal      Float         @default(0)
+  taxRate       Float         @default(0)
+  taxAmount     Float         @default(0)
+  discount      Float         @default(0)
+  total         Float         @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Which user created this invoice
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
   // Which customer this invoice belongs to
   customer   Customer @relation(fields: [customerId], references: [id])
