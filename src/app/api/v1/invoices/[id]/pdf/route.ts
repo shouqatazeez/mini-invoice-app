@@ -3,18 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 import { jsPDF } from "jspdf";
 
-/**
- * GET /api/v1/invoices/:id/pdf
- * Generates a PDF for an invoice — only if it belongs to the logged-in user.
- *
- * HOW PDF GENERATION WORKS:
- * - jsPDF creates a PDF document in memory
- * - We add text at specific x,y coordinates (measured in mm from top-left)
- * - The final PDF is returned as a downloadable file
- */
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -22,8 +13,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await ctx.params;
+
     const invoice = await prisma.invoice.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
       include: { customer: true, items: { include: { product: true } } },
     });
 
@@ -50,7 +43,8 @@ export async function GET(
     doc.text(`${invoice.customer.name}`, 20, 69);
     if (invoice.customer.email) doc.text(`${invoice.customer.email}`, 20, 76);
     if (invoice.customer.phone) doc.text(`${invoice.customer.phone}`, 20, 83);
-    if (invoice.customer.address) doc.text(`${invoice.customer.address}`, 20, 90);
+    if (invoice.customer.address)
+      doc.text(`${invoice.customer.address}`, 20, 90);
 
     let y = 105;
     doc.setFontSize(10);
@@ -78,7 +72,11 @@ export async function GET(
 
     doc.text(`Subtotal: ${invoice.subtotal.toFixed(2)}`, 130, y);
     y += 7;
-    doc.text(`Tax (${invoice.taxRate}%): ${invoice.taxAmount.toFixed(2)}`, 130, y);
+    doc.text(
+      `Tax (${invoice.taxRate}%): ${invoice.taxAmount.toFixed(2)}`,
+      130,
+      y
+    );
     y += 7;
     doc.text(`Discount: -${invoice.discount.toFixed(2)}`, 130, y);
     y += 7;

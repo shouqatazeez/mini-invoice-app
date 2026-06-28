@@ -2,13 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/products/:id
- * Fetches a single product — only if it belongs to the current user.
- */
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -16,8 +12,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await ctx.params;
+
     const product = await prisma.product.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!product) {
@@ -36,13 +34,9 @@ export async function GET(
   }
 }
 
-/**
- * PUT /api/v1/products/:id
- * Updates a product — only if it belongs to the current user.
- */
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -50,10 +44,11 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, description, price } = await request.json();
+    const { id } = await ctx.params;
+    const { name, description, price } = await req.json();
 
     const existing = await prisma.product.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!existing) {
@@ -64,7 +59,7 @@ export async function PUT(
     }
 
     const product = await prisma.product.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: { name, description, price: parseFloat(price) },
     });
 
@@ -77,13 +72,9 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE /api/v1/products/:id
- * Deletes a product — only if it belongs to the current user.
- */
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -91,8 +82,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await ctx.params;
+
     const existing = await prisma.product.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!existing) {
@@ -103,7 +96,7 @@ export async function DELETE(
     }
 
     await prisma.product.delete({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     return NextResponse.json({ message: "Product deleted successfully" });

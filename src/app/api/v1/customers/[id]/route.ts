@@ -2,14 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/customers/:id
- * Fetches a single customer — but ONLY if it belongs to the current user.
- * This prevents User A from viewing User B's customers by guessing IDs.
- */
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -17,11 +12,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await ctx.params;
+
     const customer = await prisma.customer.findFirst({
-      where: {
-        id: parseInt(params.id),
-        userId, // <-- Must belong to this user
-      },
+      where: { id: parseInt(id), userId },
       include: { invoices: true },
     });
 
@@ -41,13 +35,9 @@ export async function GET(
   }
 }
 
-/**
- * PUT /api/v1/customers/:id
- * Updates a customer — only if it belongs to the current user.
- */
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -55,11 +45,11 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, email, phone, address } = await request.json();
+    const { id } = await ctx.params;
+    const { name, email, phone, address } = await req.json();
 
-    // First verify this customer belongs to the user
     const existing = await prisma.customer.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!existing) {
@@ -70,7 +60,7 @@ export async function PUT(
     }
 
     const customer = await prisma.customer.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: { name, email, phone, address },
     });
 
@@ -83,13 +73,9 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE /api/v1/customers/:id
- * Deletes a customer — only if it belongs to the current user.
- */
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -97,9 +83,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify ownership before deleting
+    const { id } = await ctx.params;
+
     const existing = await prisma.customer.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!existing) {
@@ -110,7 +97,7 @@ export async function DELETE(
     }
 
     await prisma.customer.delete({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     return NextResponse.json({ message: "Customer deleted successfully" });

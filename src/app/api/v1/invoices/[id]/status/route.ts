@@ -2,14 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * PUT /api/v1/invoices/:id/status
- * Updates an invoice's payment status (PAID, UNPAID, OVERDUE).
- * Only works if the invoice belongs to the logged-in user.
- */
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -17,7 +12,8 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { status } = await request.json();
+    const { id } = await ctx.params;
+    const { status } = await req.json();
 
     if (!["PAID", "UNPAID", "OVERDUE"].includes(status)) {
       return NextResponse.json(
@@ -26,9 +22,8 @@ export async function PUT(
       );
     }
 
-    // Verify this invoice belongs to the user
     const existing = await prisma.invoice.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
     });
 
     if (!existing) {
@@ -39,7 +34,7 @@ export async function PUT(
     }
 
     const invoice = await prisma.invoice.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: { status },
     });
 

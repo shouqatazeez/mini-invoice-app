@@ -2,13 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/invoices/:id
- * Fetches a single invoice with all details — only if it belongs to the user.
- */
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await getUserId();
@@ -16,8 +12,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await ctx.params;
+
     const invoice = await prisma.invoice.findFirst({
-      where: { id: parseInt(params.id), userId },
+      where: { id: parseInt(id), userId },
       include: { customer: true, items: { include: { product: true } } },
     });
 
