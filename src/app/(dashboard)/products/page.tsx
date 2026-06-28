@@ -1,20 +1,9 @@
 "use client";
 
-/**
- * CUSTOMERS LIST PAGE (with shadcn AlertDialog + Toast)
- * 
- * Same pattern as Products page:
- * - AlertDialog for delete confirmation (instead of browser confirm())
- * - Toast notifications for success/error feedback
- * 
- * This is identical in structure to the Products page — just different data fields.
- * Once you understand one, you understand both.
- */
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, Package } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,46 +29,45 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface Customer {
+interface Product {
   id: number;
   name: string;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
+  description: string | null;
+  price: number;
   createdAt: string;
 }
 
-export default function CustomersPage() {
+export default function ProductsPage() {
   const router = useRouter();
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchProducts() {
       try {
-        const res = await fetch("/api/v1/customers");
+        const res = await fetch("/api/v1/products");
         const data = await res.json();
-        setCustomers(data);
+        setProducts(data);
       } catch (error) {
-        toast.error("Failed to fetch customers");
+        toast.error("Failed to fetch products");
       } finally {
         setLoading(false);
       }
     }
-    fetchCustomers();
+    fetchProducts();
   }, []);
 
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`/api/v1/customers/${id}`, {
+      const res = await fetch(`/api/v1/products/${id}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
-        setCustomers(customers.filter((c) => c.id !== id));
-        toast.success("Customer deleted successfully");
+        setProducts(products.filter((p) => p.id !== id));
+        toast.success("Product deleted successfully");
       } else {
-        toast.error("Failed to delete customer");
+        toast.error("Failed to delete product");
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -108,13 +96,13 @@ export default function CustomersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="h-6 w-6 text-muted-foreground" />
-          <h1 className="text-2xl font-bold">Customers</h1>
+          <Package className="h-6 w-6 text-muted-foreground" />
+          <h1 className="text-2xl font-bold">Products & Services</h1>
         </div>
         <Button asChild>
-          <Link href="/customers/new">
+          <Link href="/products/new">
             <Plus className="h-4 w-4 mr-2" />
-            Add Customer
+            Add Product
           </Link>
         </Button>
       </div>
@@ -123,40 +111,39 @@ export default function CustomersPage() {
 
       <Card>
         <CardContent className="pt-6">
-          {customers.length === 0 ? (
+          {products.length === 0 ? (
             <p className="text-muted-foreground text-sm py-8 text-center">
-              No customers yet. Add your first customer to get started.
+              No products yet. Add your first product or service to get started.
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Price</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {customers.map((customer) => (
-                  <TableRow key={customer.id}>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
                     <TableCell className="font-medium">
-                      {customer.name}
+                      {product.name}
                     </TableCell>
-                    <TableCell>{customer.email || "—"}</TableCell>
-                    <TableCell>{customer.phone || "—"}</TableCell>
+                    <TableCell>{product.description || "—"}</TableCell>
+                    <TableCell>₹{product.price.toLocaleString()}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() =>
-                            router.push(`/customers/${customer.id}/edit`)
+                            router.push(`/products/${product.id}/edit`)
                           }
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
-
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -166,17 +153,17 @@ export default function CustomersPage() {
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>
-                                Delete &quot;{customer.name}&quot;?
+                                Delete &quot;{product.name}&quot;?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently
-                                delete this customer and may affect related invoices.
+                                This action cannot be undone. This will
+                                permanently delete this product.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDelete(customer.id)}
+                                onClick={() => handleDelete(product.id)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
