@@ -3,13 +3,20 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Package } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Product {
@@ -81,12 +88,23 @@ export default function EditProductPage() {
   if (loading) {
     return (
       <div className="space-y-6 max-w-2xl">
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-36" />
         <Card>
-          <CardContent className="pt-6 space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-9 w-9 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-4 w-44" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-5 pt-6">
+            <div className="grid grid-cols-2 gap-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <Skeleton className="h-20 w-full" />
           </CardContent>
         </Card>
       </div>
@@ -108,18 +126,43 @@ export default function EditProductPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Product</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Package className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle>Edit Product</CardTitle>
+              <CardDescription>
+                Update the details for {product.name}.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={product.name}
-                required
-              />
+        <Separator />
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  defaultValue={product.name}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="price">Price (₹) *</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  defaultValue={product.price}
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -132,20 +175,9 @@ export default function EditProductPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="price">Price (₹) *</Label>
-              <Input
-                id="price"
-                name="price"
-                type="number"
-                step="0.01"
-                min="0"
-                defaultValue={product.price}
-                required
-              />
-            </div>
+            <Separator />
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={saving}>
                 {saving ? "Saving..." : "Save Changes"}
               </Button>

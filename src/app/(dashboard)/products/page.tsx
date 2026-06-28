@@ -119,7 +119,7 @@ export default function ProductsPage() {
             {products.length}
           </Badge>
         </div>
-        <Button asChild className="active:translate-y-0!">
+        <Button asChild>
           <Link href="/products/new">
             <Plus className="h-4 w-4 mr-2" />
             Add Product

@@ -241,19 +241,19 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div className="flex gap-3">
-        <Button asChild size="sm" className="active:!translate-y-0">
+        <Button asChild size="sm">
           <Link href="/invoices/new">
             <Plus className="h-4 w-4 mr-2" />
             New Invoice
           </Link>
         </Button>
-        <Button asChild variant="outline" size="sm" className="active:!translate-y-0">
+        <Button asChild variant="outline" size="sm">
           <Link href="/customers/new">
             <Plus className="h-4 w-4 mr-2" />
             Add Customer
           </Link>
         </Button>
-        <Button asChild variant="outline" size="sm" className="active:!translate-y-0">
+        <Button asChild variant="outline" size="sm">
           <Link href="/products/new">
             <Plus className="h-4 w-4 mr-2" />
             Add Product

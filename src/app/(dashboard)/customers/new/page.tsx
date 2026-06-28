@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -57,10 +64,21 @@ export default function NewCustomerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Add New Customer</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle>Add New Customer</CardTitle>
+              <CardDescription>
+                Enter the customer details below. Only name is required.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Separator />
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
               <Input
@@ -71,23 +89,24 @@ export default function NewCustomerPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="customer@example.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                placeholder="+91 98765 43210"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="customer@example.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  placeholder="+91 98765 43210"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -99,7 +118,9 @@ export default function NewCustomerPage() {
               />
             </div>
 
-            <div className="flex gap-3">
+            <Separator />
+
+            <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Customer"}
               </Button>

@@ -3,12 +3,19 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Customer {
@@ -82,12 +89,23 @@ export default function EditCustomerPage() {
   if (loading) {
     return (
       <div className="space-y-6 max-w-2xl">
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-36" />
         <Card>
-          <CardContent className="pt-6 space-y-4">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-9 w-9 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-5 pt-6">
             <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
+            <div className="grid grid-cols-2 gap-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
             <Skeleton className="h-10 w-full" />
           </CardContent>
         </Card>
@@ -110,10 +128,21 @@ export default function EditCustomerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Customer</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle>Edit Customer</CardTitle>
+              <CardDescription>
+                Update the details for {customer.name}.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Separator />
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
               <Input
@@ -124,23 +153,24 @@ export default function EditCustomerPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={customer.email || ""}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                defaultValue={customer.phone || ""}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  defaultValue={customer.email || ""}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  defaultValue={customer.phone || ""}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -152,7 +182,9 @@ export default function EditCustomerPage() {
               />
             </div>
 
-            <div className="flex gap-3">
+            <Separator />
+
+            <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={saving}>
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
