@@ -1,23 +1,12 @@
 "use client";
 
-/**
- * CUSTOMERS LIST PAGE (with shadcn AlertDialog + Toast)
- * 
- * Same pattern as Products page:
- * - AlertDialog for delete confirmation (instead of browser confirm())
- * - Toast notifications for success/error feedback
- * 
- * This is identical in structure to the Products page — just different data fields.
- * Once you understand one, you understand both.
- */
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -28,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,7 +69,8 @@ export default function CustomersPage() {
         setCustomers(customers.filter((c) => c.id !== id));
         toast.success("Customer deleted successfully");
       } else {
-        toast.error("Failed to delete customer");
+        const data = await res.json();
+        toast.error(data.error || "Failed to delete customer");
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -90,13 +81,28 @@ export default function CustomersPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-10 w-36" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-6 w-6 rounded" />
+            <Skeleton className="h-8 w-36" />
+            <Skeleton className="h-5 w-8 rounded-full" />
+          </div>
+          <Skeleton className="h-9 w-36 rounded-md" />
         </div>
+        <Separator />
         <Card>
           <CardContent className="pt-6 space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex gap-6">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-44" />
+                  <Skeleton className="h-4 w-28" />
+                </div>
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-8 rounded" />
+                  <Skeleton className="h-8 w-8 rounded" />
+                </div>
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -110,8 +116,11 @@ export default function CustomersPage() {
         <div className="flex items-center gap-3">
           <Users className="h-6 w-6 text-muted-foreground" />
           <h1 className="text-2xl font-bold">Customers</h1>
+          <Badge variant="secondary" className="text-xs">
+            {customers.length}
+          </Badge>
         </div>
-        <Button asChild>
+        <Button asChild className="active:translate-y-0!">
           <Link href="/customers/new">
             <Plus className="h-4 w-4 mr-2" />
             Add Customer
@@ -124,9 +133,21 @@ export default function CustomersPage() {
       <Card>
         <CardContent className="pt-6">
           {customers.length === 0 ? (
-            <p className="text-muted-foreground text-sm py-8 text-center">
-              No customers yet. Add your first customer to get started.
-            </p>
+            <div className="py-16 text-center">
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                <Users className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h3 className="text-sm font-medium mb-1">No customers yet</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Add your first customer to start creating invoices.
+              </p>
+              <Button asChild size="sm">
+                <Link href="/customers/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Customer
+                </Link>
+              </Button>
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -139,28 +160,50 @@ export default function CustomersPage() {
               </TableHeader>
               <TableBody>
                 {customers.map((customer) => (
-                  <TableRow key={customer.id}>
+                  <TableRow key={customer.id} className="group">
                     <TableCell className="font-medium">
                       {customer.name}
                     </TableCell>
-                    <TableCell>{customer.email || "—"}</TableCell>
-                    <TableCell>{customer.phone || "—"}</TableCell>
+                    <TableCell>
+                      {customer.email ? (
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <Mail className="h-3.5 w-3.5" />
+                          {customer.email}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/50">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {customer.phone ? (
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <Phone className="h-3.5 w-3.5" />
+                          {customer.phone}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/50">—</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8"
                           onClick={() =>
                             router.push(`/customers/${customer.id}/edit`)
                           }
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
-
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-destructive" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
@@ -169,8 +212,9 @@ export default function CustomersPage() {
                                 Delete &quot;{customer.name}&quot;?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently
-                                delete this customer and may affect related invoices.
+                                This action cannot be undone. This will
+                                permanently delete this customer and may affect
+                                related invoices.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
