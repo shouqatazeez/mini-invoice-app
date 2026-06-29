@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/products
- * Fetches all products belonging to the logged-in user.
- */
 export async function GET() {
   try {
     const userId = await getUserId();
@@ -27,10 +23,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/v1/products
- * Creates a new product assigned to the logged-in user.
- */
 export async function POST(request: Request) {
   try {
     const userId = await getUserId();
@@ -48,12 +40,7 @@ export async function POST(request: Request) {
     }
 
     const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        userId,
-      },
+      data: { name, description, price: parseFloat(price), userId },
     });
 
     return NextResponse.json(product, { status: 201 });

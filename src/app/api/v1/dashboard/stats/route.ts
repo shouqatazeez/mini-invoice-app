@@ -2,17 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/dashboard/stats
- * Returns aggregated statistics for the logged-in user's data only.
- *
- * WHAT THE STATS INCLUDE:
- * - Total revenue (sum of all PAID invoices)
- * - Total unpaid amount
- * - Total overdue amount
- * - Counts of invoices by status
- * - Total customers and products
- */
 export async function GET() {
   try {
     const userId = await getUserId();

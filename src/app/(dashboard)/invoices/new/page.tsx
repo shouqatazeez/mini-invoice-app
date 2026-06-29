@@ -241,7 +241,7 @@ export default function NewInvoicePage() {
             {/* Line items */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label>Line Items</Label>
+                <Label>Line Items *</Label>
                 <Button
                   type="button"
                   variant="outline"

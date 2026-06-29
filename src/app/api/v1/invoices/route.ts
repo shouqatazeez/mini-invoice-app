@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/get-user-id";
 
-/**
- * GET /api/v1/invoices
- * Fetches all invoices belonging to the logged-in user.
- * Includes customer name and line items with product details.
- */
 export async function GET() {
   try {
     const userId = await getUserId();
@@ -29,17 +24,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/v1/invoices
- * Creates a new invoice with line items.
- *
- * HOW INVOICE MATH WORKS:
- * - subtotal = sum of (quantity × price) for each item
- * - taxAmount = subtotal × (taxRate / 100)
- * - total = subtotal + taxAmount - discount
- *
- * We also verify the customer belongs to the user (can't invoice someone else's customer).
- */
 export async function POST(request: Request) {
   try {
     const userId = await getUserId();
@@ -56,7 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify the customer belongs to this user
     const customer = await prisma.customer.findFirst({
       where: { id: customerId, userId },
     });
