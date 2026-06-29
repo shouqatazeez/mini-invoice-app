@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ interface Invoice {
 }
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -147,8 +147,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const firstName = session?.user?.name?.split(" ")[0] || "there";
 
   return (
     <div className="space-y-8">
@@ -299,7 +297,7 @@ export default function DashboardPage() {
               </TableHeader>
               <TableBody>
                 {invoices.map((invoice) => (
-                  <TableRow key={invoice.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow key={invoice.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/invoices/${invoice.id}`)}>
                     <TableCell className="font-medium font-mono text-xs">
                       {invoice.invoiceNumber.slice(0, 12)}
                     </TableCell>
