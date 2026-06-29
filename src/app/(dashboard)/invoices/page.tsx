@@ -203,7 +203,7 @@ export default function InvoicesPage() {
                 {invoices.map((invoice) => (
                   <TableRow key={invoice.id} className="group">
                     <TableCell className="font-mono text-xs font-medium">
-                      {invoice.invoiceNumber.slice(0, 12)}
+                      {invoice.invoiceNumber}
                     </TableCell>
                     <TableCell className="font-medium">
                       {invoice.customer.name}
@@ -259,8 +259,8 @@ export default function InvoicesPage() {
                                 Delete this invoice?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. Invoice #
-                                {invoice.invoiceNumber.slice(0, 12)} will be
+                                This action cannot be undone. Invoice{" "}
+                                {invoice.invoiceNumber} will be
                                 permanently deleted.
                               </AlertDialogDescription>
                             </AlertDialogHeader>

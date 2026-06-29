@@ -77,8 +77,24 @@ export async function POST(request: Request) {
     const taxAmount = (subtotal * (taxRate || 0)) / 100;
     const total = subtotal + taxAmount - (discount || 0);
 
+    // Generate readable invoice number: INV-001, INV-002, etc.
+    const lastInvoice = await prisma.invoice.findFirst({
+      where: { userId },
+      orderBy: { id: "desc" },
+      select: { invoiceNumber: true },
+    });
+
+    let nextNumber = 1;
+    if (lastInvoice?.invoiceNumber?.startsWith("INV-")) {
+      const lastNum = parseInt(lastInvoice.invoiceNumber.split("-")[1]);
+      if (!isNaN(lastNum)) nextNumber = lastNum + 1;
+    }
+
+    const invoiceNumber = `INV-${nextNumber.toString().padStart(3, "0")}`;
+
     const invoice = await prisma.invoice.create({
       data: {
+        invoiceNumber,
         userId,
         customerId,
         subtotal,

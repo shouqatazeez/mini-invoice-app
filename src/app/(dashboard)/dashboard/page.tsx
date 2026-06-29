@@ -428,7 +428,7 @@ export default function DashboardPage() {
                 {invoices.map((invoice) => (
                   <TableRow key={invoice.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/invoices/${invoice.id}`)}>
                     <TableCell className="font-medium font-mono text-xs">
-                      {invoice.invoiceNumber.slice(0, 12)}
+                      {invoice.invoiceNumber}
                     </TableCell>
                     <TableCell>{invoice.customer.name}</TableCell>
                     <TableCell className="font-medium">

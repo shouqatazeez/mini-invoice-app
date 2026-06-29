@@ -198,7 +198,7 @@ export default function InvoiceDetailPage() {
               </div>
               <div>
                 <CardTitle className="text-lg">
-                  Invoice #{invoice.invoiceNumber.slice(0, 12)}
+                  Invoice {invoice.invoiceNumber}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   Created on{" "}
