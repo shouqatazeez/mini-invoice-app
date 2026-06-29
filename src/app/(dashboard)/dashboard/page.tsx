@@ -259,6 +259,135 @@ export default function DashboardPage() {
         </Button>
       </div>
 
+      {/* Invoice status chart */}
+      {stats && stats.totalInvoices > 0 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Invoice Status Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-green-500" />
+                      Paid
+                    </span>
+                    <span className="font-medium">{stats.paidCount}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all"
+                      style={{ width: `${(stats.paidCount / stats.totalInvoices) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-yellow-500" />
+                      Unpaid
+                    </span>
+                    <span className="font-medium">{stats.unpaidCount}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-yellow-500 rounded-full transition-all"
+                      style={{ width: `${(stats.unpaidCount / stats.totalInvoices) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-red-500" />
+                      Overdue
+                    </span>
+                    <span className="font-medium">{stats.overdueCount}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-red-500 rounded-full transition-all"
+                      style={{ width: `${(stats.overdueCount / stats.totalInvoices) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Revenue Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Collected</span>
+                    <span className="font-medium text-green-600 dark:text-green-400">
+                      ₹{stats.totalRevenue.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all"
+                      style={{
+                        width: `${stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue > 0
+                          ? (stats.totalRevenue / (stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue)) * 100
+                          : 0}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Pending</span>
+                    <span className="font-medium text-yellow-600 dark:text-yellow-400">
+                      ₹{stats.totalUnpaid.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-yellow-500 rounded-full transition-all"
+                      style={{
+                        width: `${stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue > 0
+                          ? (stats.totalUnpaid / (stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue)) * 100
+                          : 0}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Overdue</span>
+                    <span className="font-medium text-red-600 dark:text-red-400">
+                      ₹{stats.totalOverdue.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-red-500 rounded-full transition-all"
+                      style={{
+                        width: `${stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue > 0
+                          ? (stats.totalOverdue / (stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue)) * 100
+                          : 0}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between text-sm font-medium">
+                  <span>Total Billed</span>
+                  <span>₹{(stats.totalRevenue + stats.totalUnpaid + stats.totalOverdue).toLocaleString()}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Recent invoices */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
