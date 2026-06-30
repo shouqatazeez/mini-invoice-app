@@ -1,36 +1,305 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InvoTrack
 
-## Getting Started
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-brightgreen?style=for-the-badge&logo=vercel)](https://myinvotrack.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?style=flat-square&logo=postgresql)](https://neon.tech/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma)](https://prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38B2AC?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
 
-First, run the development server:
+**A full-stack invoice management system for small businesses, freelancers, and service providers.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+I built InvoTrack because small businesses and freelancers often manage customers, invoices, payments, and tax calculations manually — in WhatsApp messages and Excel sheets. They forget who paid, who has pending payment, and what the monthly revenue is.
+
+InvoTrack gives them one simple system: add customers, create invoices with automatic tax and discount calculations, track payment status, download branded PDF invoices, and see everything at a glance on a clean dashboard.
+
+---
+
+## Live Demo
+
+**App:** [https://myinvotrack.vercel.app](https://myinvotrack.vercel.app/)
+
+---
+
+## The Problem
+
+Every small business owner, tuition teacher, freelancer, and repair shop deals with:
+
+- Forgetting who paid and who didn't
+- Manually calculating tax, discounts, and totals
+- No professional invoices to send customers
+- No overview of monthly revenue vs pending payments
+- Managing everything in WhatsApp groups or messy spreadsheets
+
+InvoTrack solves all of this with a clean billing dashboard that takes 2 minutes to set up.
+
+---
+
+## How It Works
+
+### 1. Add Your Products/Services
+Define what you charge for — "Math Tuition ₹500", "Laptop Repair ₹2000", "Web Design ₹15000". Set it once, use it forever when creating invoices.
+
+### 2. Add Your Customers
+Store customer details — name, email, phone, address. Only the name is required. Add more details later.
+
+### 3. Create an Invoice
+Pick a customer, add line items (select products, set quantity), apply tax rate and discount. The app calculates subtotal, tax amount, and final total automatically.
+
+### 4. Track & Download
+Mark invoices as Paid, Unpaid, or Overdue. Download a branded PDF invoice to share with customers via WhatsApp or email. Dashboard shows revenue, pending, and overdue amounts at a glance.
+
+---
+
+## Features
+
+### Dashboard with Revenue Analytics
+- Total Revenue, Unpaid Amount, Overdue Amount at a glance
+- Invoice Status Breakdown (progress bars showing paid/unpaid/overdue split)
+- Revenue Summary (collected vs pending vs overdue)
+- Recent Invoices table with clickable rows
+- Quick action buttons (New Invoice, Add Customer, Add Product)
+
+### Invoice Management
+- Create invoices with multiple line items
+- Auto-calculated subtotal, GST/tax, discount, and final total
+- Sequential invoice numbers (INV-001, INV-002, INV-003...)
+- Status management: mark as PAID, UNPAID, or OVERDUE
+- Delete invoices with confirmation dialog
+
+### PDF Invoice Export
+- Download branded PDF invoices with one click
+- Blue themed header with InvoTrack branding
+- Customer details, line items table, tax breakdown
+- Professional layout ready to send to customers
+
+### Customer & Product CRUD
+- Full create, read, update, delete for customers and products
+- Table view with edit/delete actions
+- Toast notifications for all operations
+- Alert dialog confirmation before deleting
+
+### Authentication & Security
+- User registration and login with email/password
+- JWT-based sessions (30-day expiry)
+- All data scoped to the logged-in user (multi-tenant)
+- Users can never see each other's data
+- Route protection via middleware
+
+### UI/UX
+- Responsive sidebar navigation
+- Dark mode support (follows system theme)
+- Shimmer skeleton loading states
+- Toast notifications (success/error feedback)
+- Styled confirmation dialogs for destructive actions
+- Landing page with hero, features, and how-it-works sections
+
+---
+
+## Use Cases
+
+**A tuition teacher with 20 students**
+She adds each student as a customer, creates monthly invoices for "Math Tuition x 4 classes = ₹2000", downloads the PDF, and sends it on WhatsApp. When they pay via UPI, she marks it PAID. End of month — dashboard shows exactly how much she earned vs what's still pending.
+
+**A freelance web developer**
+He creates invoices for each project milestone — "Frontend Development ₹25000 + Backend API ₹15000 + Tax 18%". Downloads a professional PDF to email the client. Tracks which clients have overdue payments.
+
+**A laptop repair shop**
+Walk-in customer needs a repair. Owner creates a quick invoice: "Screen Replacement x 1 = ₹5000 + GST 18%". Prints or WhatsApps the PDF. Marks it paid when customer pays.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| Framework | Next.js 16 (App Router) | Full-stack React with API routes, server components |
+| Language | TypeScript 5 | Type safety, catches bugs at compile time |
+| Database | PostgreSQL (Neon) | Cloud-native, serverless-compatible |
+| ORM | Prisma 7 | Type-safe database queries, easy migrations |
+| Auth | NextAuth 4 (JWT) | Session management, credential provider |
+| UI | shadcn/ui + Radix UI | Accessible, customizable component library |
+| Styling | Tailwind CSS 4 | Utility-first, fast iteration |
+| PDF | jsPDF | Client-side PDF generation |
+| Icons | Lucide React | Consistent, lightweight icon set |
+| Deployment | Vercel | Zero-config Next.js deployment |
+
+---
+
+## Database Schema
+
+```
+User (id, email, password, name)
+  └── has many → Customer (id, name, email, phone, address, userId)
+  └── has many → Product (id, name, description, price, userId)
+  └── has many → Invoice (id, invoiceNumber, status, subtotal, taxRate, taxAmount, discount, total, userId, customerId)
+                    └── has many → InvoiceItem (id, quantity, price, total, invoiceId, productId)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Key design decisions:**
+- Every entity has a `userId` foreign key — ensures complete data isolation between users
+- Invoice status is an enum: PAID, UNPAID, OVERDUE
+- Invoice items cascade delete when invoice is deleted
+- Invoice number auto-generates as INV-001, INV-002 per user
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+All endpoints require authentication (JWT via middleware).
 
-To learn more about Next.js, take a look at the following resources:
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Create account |
+| POST | `/api/auth/[...nextauth]` | Login (NextAuth) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Customers
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/customers` | List all |
+| POST | `/api/v1/customers` | Create |
+| GET | `/api/v1/customers/:id` | Get one |
+| PUT | `/api/v1/customers/:id` | Update |
+| DELETE | `/api/v1/customers/:id` | Delete |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Products
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/products` | List all |
+| POST | `/api/v1/products` | Create |
+| GET | `/api/v1/products/:id` | Get one |
+| PUT | `/api/v1/products/:id` | Update |
+| DELETE | `/api/v1/products/:id` | Delete |
 
-## Deploy on Vercel
+### Invoices
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/invoices` | List all with items |
+| POST | `/api/v1/invoices` | Create with line items |
+| GET | `/api/v1/invoices/:id` | Get with full details |
+| DELETE | `/api/v1/invoices/:id` | Delete |
+| PUT | `/api/v1/invoices/:id/status` | Update payment status |
+| GET | `/api/v1/invoices/:id/pdf` | Download PDF |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Dashboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/dashboard/stats` | Revenue, counts, breakdowns |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Project Structure
+
+```
+mini-invoice-app/
+├── prisma/
+│   ├── schema.prisma          # Database models
+│   └── migrations/            # SQL migration files
+├── src/
+│   ├── app/
+│   │   ├── page.tsx           # Landing page
+│   │   ├── layout.tsx         # Root layout (fonts, providers)
+│   │   ├── (auth)/
+│   │   │   ├── login/         # Login page
+│   │   │   └── register/      # Register page
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx     # Sidebar layout
+│   │   │   ├── dashboard/     # Dashboard with stats + charts
+│   │   │   ├── customers/     # List, create, edit pages
+│   │   │   ├── products/      # List, create, edit pages
+│   │   │   └── invoices/      # List, create, detail pages
+│   │   └── api/v1/
+│   │       ├── auth/          # Registration endpoint
+│   │       ├── customers/     # CRUD endpoints
+│   │       ├── products/      # CRUD endpoints
+│   │       ├── invoices/      # CRUD + status + PDF endpoints
+│   │       └── dashboard/     # Stats endpoint
+│   ├── components/
+│   │   ├── ui/                # shadcn/ui components
+│   │   ├── app-sidebar.tsx    # Navigation sidebar
+│   │   └── providers.tsx      # Session + Theme + Toast providers
+│   └── lib/
+│       ├── auth.ts            # NextAuth configuration
+│       ├── prisma.ts          # Prisma client singleton
+│       ├── get-user-id.ts     # Session helper
+│       └── utils.ts           # Utility functions
+├── .env                       # Environment variables (not committed)
+├── middleware.ts              # Route protection
+└── package.json
+```
+
+---
+
+## Setup
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL (or use [Neon](https://neon.tech/) free tier)
+
+### Installation
+
+```bash
+git clone https://github.com/shouqatazeez/mini-invoice-app.git
+cd mini-invoice-app
+npm install
+```
+
+Create `.env`:
+```env
+DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
+NEXTAUTH_SECRET="your-random-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+Run database migrations:
+```bash
+npx prisma migrate dev
+```
+
+Start development server:
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+---
+
+## Deployment
+
+Deployed on Vercel with zero configuration:
+
+1. Push to GitHub
+2. Import repository on [vercel.com](https://vercel.com)
+3. Add environment variables (`DATABASE_URL`, `NEXTAUTH_SECRET`)
+4. Deploy — Vercel auto-detects Next.js and builds
+
+Database hosted on Neon (free tier, serverless PostgreSQL).
+
+---
+
+## What's Next
+
+Optional features planned for future iterations:
+
+- Search and filter on invoice/customer lists
+- Date range filter for revenue analytics
+- CSV export of all invoices
+- Email invoice directly to customer
+- Recurring invoices (monthly auto-generation)
+- Payment history and partial payments
+
+---
+
+## Contact
+
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mdshouqatazeez@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/shouqat-azeez-mohammad/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=react&logoColor=61DAFB)](https://mohammadshouqatazeez.vercel.app/)
+
+---
+
+## License
+
+MIT License
