@@ -55,7 +55,6 @@ export default function NewInvoicePage() {
     { productId: null, quantity: 1, price: 0 },
   ]);
 
-  // Fetch customers and products on page load
   useEffect(() => {
     async function fetchData() {
       try {
@@ -76,7 +75,6 @@ export default function NewInvoicePage() {
     fetchData();
   }, []);
 
-  // When user picks a product, auto-fill its price
   const handleProductChange = (index: number, productId: string) => {
     const product = products.find((p) => p.id === parseInt(productId));
     const newItems = [...items];
@@ -109,7 +107,6 @@ export default function NewInvoicePage() {
     setItems(items.filter((_, i) => i !== index));
   };
 
-  // Calculations
   const taxRateNum = parseFloat(taxRate) || 0;
   const discountNum = parseFloat(discount) || 0;
   const subtotal = items.reduce(
