@@ -13,6 +13,10 @@ I built InvoTrack because small businesses and freelancers often manage customer
 
 InvoTrack gives them one simple system: add customers, create invoices with automatic tax and discount calculations, track payment status, download branded PDF invoices, and see everything at a glance on a clean dashboard.
 
+<p align="center">
+  <img src="screenshots/dashboard.png" alt="InvoTrack Dashboard" width="100%" />
+</p>
+
 ---
 
 ## Live Demo
@@ -67,11 +71,23 @@ Mark invoices as Paid, Unpaid, or Overdue. Download a branded PDF invoice to sha
 - Status management: mark as PAID, UNPAID, or OVERDUE
 - Delete invoices with confirmation dialog
 
+<p align="center">
+  <img src="screenshots/invoices.png" alt="Invoices List" width="100%" />
+</p>
+
 ### PDF Invoice Export
 - Download branded PDF invoices with one click
 - Blue themed header with InvoTrack branding
 - Customer details, line items table, tax breakdown
 - Professional layout ready to send to customers
+
+<p align="center">
+  <img src="screenshots/invoice-pdf.png" alt="Invoice PDF" width="100%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/invoice-detail.png" alt="Invoice Detail" width="100%" />
+</p>
 
 ### Customer & Product CRUD
 - Full create, read, update, delete for customers and products
