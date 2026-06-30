@@ -11,7 +11,6 @@ import {
   FileText,
   LogOut,
   ChevronsUpDown,
-  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -127,10 +126,6 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Account
-                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: "/login" })}
                 >
