@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { ReceiptText, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
@@ -43,7 +44,17 @@ export default function RegisterPage() {
         return;
       }
 
-      router.push("/login");
+      const loginResult = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (loginResult?.error) {
+        router.push("/login");
+      } else {
+        router.push("/dashboard");
+      }
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
