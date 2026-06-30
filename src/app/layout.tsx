@@ -7,7 +7,7 @@ import { Providers } from "@/components/providers";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "InvoTrack - Simple Billing for Small Businesses",
+  title: "InvoTrack",
   description:
     "Create invoices, track payments, and manage customers with ease.",
 };
